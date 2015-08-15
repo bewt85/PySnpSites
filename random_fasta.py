@@ -3,9 +3,10 @@
 import random
 from Bio import SeqIO
 
-N_SEQUENCES = 1000
+# Makes about 1GB of sequences
+N_SEQUENCES = 211
 SEQUENCE_LENGTH = 5000000
-MUTATION_RATE = 0.001
+MUTATION_RATE = 0.0001
 
 bases = 'ACGT'
 output_file = open('random.fa', 'w')
