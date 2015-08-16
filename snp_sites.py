@@ -21,10 +21,10 @@ def write_header(sequence_names, reference_length, output_file):
 def update_snps(sequence_names, snps, reference, sequence):
   reference_seq = str(reference.seq)
   sequence_seq = str(sequence.seq)
+  sequence_names.append(sequence.name)
   for i in xrange(len(reference_seq)):
     if reference_seq[i] != sequence_seq[i]:
-      snps.setdefault(i, {})[sequence.name] = sequence_seq[i]
-  sequence_names.append(sequence.name)
+      snps.setdefault(i, []).append((len(sequence_names)-1, sequence_seq[i]))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -50,12 +50,15 @@ if __name__ == '__main__':
   for row_idx, (posn, snp_in_posn) in enumerate(snps.items()):
     ref_base = str(ref.seq)[posn]
     output_row = [1, posn+1, '.', ref_base]
-    alts_set = set(snp_in_posn.values())
+    alts_set = set([seq_base for _,seq_base in snp_in_posn])
     alts = {a: i+1 for i,a in enumerate(alts_set)}
     output_row.append(",".join(alts.keys()))
     output_row += ['.', '.', '.', 'GT']
     alts[ref_base] = 0
-    bases_at_posn = (snp_in_posn.get(name, ref_base) for name in sequence_names)
+    bases_at_posn = []
+    for (seq_index, snp_base) in snp_in_posn:
+      bases_at_posn += [ref_base] * (seq_index - len(bases_at_posn)) + [snp_base]
+    bases_at_posn += [ref_base] * (len(sequence_names) - len(bases_at_posn))
     indices_at_posn = [str(alts.get(base, '.')) for base in bases_at_posn]
     output_row += indices_at_posn
     write_row(output_row, args.output)
