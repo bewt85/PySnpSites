@@ -2,11 +2,14 @@
 
 import argparse
 import json
-import numpy as np
+import pyximport
 import unittest
 
 from collections import OrderedDict
 from cStringIO import StringIO
+
+pyximport.install()
+import snp_sites_extensions
 
 try:
   profile = profile
@@ -25,16 +28,6 @@ def write_header(sequence_names, reference_length, output_file):
   header_row = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"]
   header_row += sequence_names
   write_row(header_row, output_file)
-
-@profile
-def update_snps(sequence_names, snps, ref_array, sequence_name, sequence_seq):
-  sequence_names.append(sequence_name)
-  sequence_array = np.array(list(sequence_seq))
-  (snp_indices,) = np.nonzero(ref_array != sequence_array)
-  def update(i):
-    snps.setdefault(i, []).append((len(sequence_names)-1, sequence_seq[i]))
-  for i in snp_indices:
-    update(i)
 
 @profile
 def parse_fasta(input_fasta):
@@ -64,13 +57,12 @@ if __name__ == '__main__':
   
   sequences = parse_fasta(args.input)
   ref_name,ref_seq = sequences.next()
-  ref_array = np.array(list(ref_seq))
   snps = {}
   sequence_names = []
   sequence_names.append(ref_name)
   
   for seq_name,seq_seq in sequences:
-    update_snps(sequence_names, snps, ref_array, seq_name, seq_seq)
+    snp_sites_extensions.update_snps(sequence_names, snps, ref_seq, seq_name, seq_seq)
   
   snps = OrderedDict([(posn, snps[posn]) for posn in sorted(snps.keys())])
   
