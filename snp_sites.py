@@ -46,7 +46,8 @@ if __name__ == '__main__':
   sequence_names.append(ref_name)
   
   for seq_name,seq_seq in sequences:
-    snp_sites_extensions.update_snps(sequence_names, snps, ref_seq, seq_name, seq_seq)
+    snp_sites_extensions.update_snps(sequence_names, snps, bytearray(ref_seq),
+                                     seq_name, bytearray(seq_seq))
   
   snps = OrderedDict([(posn, snps[posn]) for posn in sorted(snps.keys())])
   

@@ -13,8 +13,11 @@ def parse_fasta(input_fasta):
       sequence_lines.append(line.rstrip())
   yield(sequence_name, "".join(sequence_lines))
 
-def update_snps(sequence_names, snps, ref_seq, sequence_name, sequence_seq):
+def update_snps(sequence_names, snps, char[:] ref_seq, sequence_name, char[:] sequence_seq):
   sequence_names.append(sequence_name)
+  cdef int i
+  cdef char r,s
   for i in xrange(len(ref_seq)):
-    if ref_seq[i] != sequence_seq[i]:
-      snps.setdefault(i, []).append((len(sequence_names)-1, sequence_seq[i]))
+    r,s  = ref_seq[i], sequence_seq[i]
+    if r != s:
+      snps.setdefault(i, []).append((len(sequence_names)-1, chr(s)))
