@@ -19,9 +19,11 @@ def write_header(sequence_names, reference_length, output_file):
   write_row(header_row, output_file)
 
 def update_snps(sequence_names, snps, reference, sequence):
-  for i, (r, s) in enumerate(zip(str(reference.seq), str(sequence.seq))):
-    if r != s:
-      snps.setdefault(i, {})[sequence.name] = s
+  reference_seq = str(reference.seq)
+  sequence_seq = str(sequence.seq)
+  for i in xrange(len(reference_seq)):
+    if reference_seq[i] != sequence_seq[i]:
+      snps.setdefault(i, {})[sequence.name] = sequence_seq[i]
   sequence_names.append(sequence.name)
 
 if __name__ == '__main__':
