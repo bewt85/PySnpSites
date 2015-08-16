@@ -18,8 +18,7 @@ def write_header(sequence_names, reference_length, output_file):
   header_row += sequence_names
   write_row(header_row, output_file)
 
-def update_snps(sequence_names, snps, reference, sequence):
-  reference_seq = str(reference.seq)
+def update_snps(sequence_names, snps, reference_seq, sequence):
   sequence_seq = str(sequence.seq)
   sequence_names.append(sequence.name)
   for i in xrange(len(reference_seq)):
@@ -40,8 +39,9 @@ if __name__ == '__main__':
   sequence_names = []
   sequence_names.append(ref.name)
   
+  reference_seq = str(ref.seq)
   for seq in sequences:
-    update_snps(sequence_names, snps, ref, seq)
+    update_snps(sequence_names, snps, reference_seq, seq)
   
   snps = OrderedDict([(posn, snps[posn]) for posn in sorted(snps.keys())])
   
