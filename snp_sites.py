@@ -55,10 +55,10 @@ if __name__ == '__main__':
     output_row.append(",".join(alts.keys()))
     output_row += ['.', '.', '.', 'GT']
     alts[ref_base] = 0
-    bases_at_posn = []
-    for (seq_index, snp_base) in snp_in_posn:
-      bases_at_posn += [ref_base] * (seq_index - len(bases_at_posn)) + [snp_base]
-    bases_at_posn += [ref_base] * (len(sequence_names) - len(bases_at_posn))
-    indices_at_posn = [str(alts.get(base, '.')) for base in bases_at_posn]
+    snp_index_in_posn = [(idx, str(alts.get(base, '0'))) for idx,base in snp_in_posn]
+    indices_at_posn = []
+    for (seq_index, snp_base) in snp_index_in_posn:
+      indices_at_posn += ['0'] * (seq_index - len(indices_at_posn)) + [snp_base]
+    indices_at_posn += ['0'] * (len(sequence_names) - len(indices_at_posn))
     output_row += indices_at_posn
     write_row(output_row, args.output)
