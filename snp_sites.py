@@ -7,6 +7,11 @@ import unittest
 from collections import OrderedDict
 from cStringIO import StringIO
 
+try:
+  profile = profile
+except:
+  profile = lambda f: f
+
 def write_row(row, output_file):
   output_file.write("\t".join(map(str, row)) + "\n")
 
@@ -43,9 +48,11 @@ def parse_fasta(input_fasta):
       sequence_lines.append(line.rstrip())
   yield(sequence_name, "".join(sequence_lines))
 
+BUFFER_SIZE = 10*1024*1024
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('input', type=argparse.FileType('r'),
+  parser.add_argument('input', type=argparse.FileType('r', BUFFER_SIZE),
                       default=open('random.short.fa', 'r'))
   parser.add_argument('output', type=argparse.FileType('w'),
                       default=open('random.short.fa.vcf', 'w'))
