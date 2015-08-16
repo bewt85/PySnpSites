@@ -29,22 +29,6 @@ def write_header(sequence_names, reference_length, output_file):
   header_row += sequence_names
   write_row(header_row, output_file)
 
-@profile
-def parse_fasta(input_fasta):
-  for line in input_fasta:
-     if line[0] == '>':
-       break
-  sequence_name = line[1:].rstrip()
-  sequence_lines = []
-  for line in input_fasta:
-    if line[0] == '>':
-      yield (sequence_name, "".join(sequence_lines))
-      sequence_name = line[1:].rstrip()
-      sequence_lines = []
-    else:
-      sequence_lines.append(line.rstrip())
-  yield(sequence_name, "".join(sequence_lines))
-
 BUFFER_SIZE = 10*1024*1024
 
 if __name__ == '__main__':
@@ -55,7 +39,7 @@ if __name__ == '__main__':
                       default=open('random.short.fa.vcf', 'w'))
   args = parser.parse_args()
   
-  sequences = parse_fasta(args.input)
+  sequences = snp_sites_extensions.parse_fasta(args.input)
   ref_name,ref_seq = sequences.next()
   snps = {}
   sequence_names = []
@@ -92,6 +76,6 @@ AAAAAAAAAAAAAAAAAAA
 >bar
 GGGGGGGGGGGGGGGGGGG
 """)
-    sequences = parse_fasta(input_fasta)
+    sequences = snp_sites_extensions.parse_fasta(input_fasta)
     self.assertEqual(sequences.next(), ('foo', 'AAAAAAAAAAAAAAAAAAA'))
     self.assertEqual(sequences.next(), ('bar', 'GGGGGGGGGGGGGGGGGGG'))
