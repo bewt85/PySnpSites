@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import numpy as np
 import unittest
 
 from collections import OrderedDict
@@ -26,17 +27,20 @@ def write_header(sequence_names, reference_length, output_file):
   write_row(header_row, output_file)
 
 @profile
-def update_snps(sequence_names, snps, reference_seq, sequence_name, sequence_seq):
+def update_snps(sequence_names, snps, ref_array, sequence_name, sequence_seq):
   sequence_names.append(sequence_name)
-  for i in xrange(len(reference_seq)):
-    if reference_seq[i] != sequence_seq[i]:
-      snps.setdefault(i, []).append((len(sequence_names)-1, sequence_seq[i]))
+  sequence_array = np.array(list(sequence_seq))
+  (snp_indices,) = np.nonzero(ref_array != sequence_array)
+  def update(i):
+    snps.setdefault(i, []).append((len(sequence_names)-1, sequence_seq[i]))
+  for i in snp_indices:
+    update(i)
 
 @profile
 def parse_fasta(input_fasta):
   for line in input_fasta:
-    if line[0] == '>':
-      break
+     if line[0] == '>':
+       break
   sequence_name = line[1:].rstrip()
   sequence_lines = []
   for line in input_fasta:
@@ -60,12 +64,13 @@ if __name__ == '__main__':
   
   sequences = parse_fasta(args.input)
   ref_name,ref_seq = sequences.next()
+  ref_array = np.array(list(ref_seq))
   snps = {}
   sequence_names = []
   sequence_names.append(ref_name)
   
   for seq_name,seq_seq in sequences:
-    update_snps(sequence_names, snps, ref_seq, seq_name, seq_seq)
+    update_snps(sequence_names, snps, ref_array, seq_name, seq_seq)
   
   snps = OrderedDict([(posn, snps[posn]) for posn in sorted(snps.keys())])
   
