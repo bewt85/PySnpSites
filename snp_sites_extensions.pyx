@@ -1,9 +1,17 @@
-from Bio import SeqIO
-
-def parse_fasta(input_file):
-  sequences = SeqIO.parse(input_file, 'fasta')
-  for sequence in sequences:
-    yield (sequence.name, str(sequence.seq))
+def parse_fasta(input_fasta):
+  for line in input_fasta:
+     if line[0] == '>':
+       break
+  sequence_name = line[1:].rstrip()
+  sequence_lines = []
+  for line in input_fasta:
+    if line[0] == '>':
+      yield (sequence_name, "".join(sequence_lines))
+      sequence_name = line[1:].rstrip()
+      sequence_lines = []
+    else:
+      sequence_lines.append(line.rstrip())
+  yield(sequence_name, "".join(sequence_lines))
 
 def update_snps(sequence_names, snps, char[:] ref_seq, sequence_name, char[:] sequence_seq):
   sequence_names.append(sequence_name)

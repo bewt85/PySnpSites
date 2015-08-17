@@ -11,6 +11,11 @@ from cStringIO import StringIO
 pyximport.install()
 import snp_sites_extensions
 
+try:
+  profile = profile
+except:
+  profile = lambda f: f
+
 def write_row(row, output_file):
   output_file.write("\t".join(map(str, row)) + "\n")
 
