@@ -11,11 +11,6 @@ from cStringIO import StringIO
 pyximport.install()
 import snp_sites_extensions
 
-try:
-  profile = profile
-except:
-  profile = lambda f: f
-
 def write_row(row, output_file):
   output_file.write("\t".join(map(str, row)) + "\n")
 
@@ -33,8 +28,7 @@ BUFFER_SIZE = 10*1024*1024
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('input', type=argparse.FileType('r', BUFFER_SIZE),
-                      default=open('random.short.fa', 'r'))
+  parser.add_argument('input', type=argparse.FileType('r', BUFFER_SIZE))
   parser.add_argument('output', type=argparse.FileType('w'),
                       default=open('random.short.fa.vcf', 'w'))
   args = parser.parse_args()
