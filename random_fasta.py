@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
+import pyximport
 import random
 from Bio import SeqIO
+
+pyximport.install()
+import random_fasta_extensions
 
 # Makes about 1GB of sequences
 N_SEQUENCES = 211
@@ -21,16 +25,9 @@ def write_sequence(output_file, name, sequence):
 
 write_sequence(output_file, name, ref_sequence)
 
-def mutate_sequence(sequence, mutation_rate):
-  mutation = [s for s in sequence]
-  for i,base in enumerate(sequence):
-    if random.random() < mutation_rate:
-      mutation[i] = random.choice(bases)
-  return ''.join(mutation)
-
 for i in xrange(N_SEQUENCES):
   name = "seq_%s" % i
-  sequence = mutate_sequence(ref_sequence, MUTATION_RATE)
+  sequence = random_fasta_extensions.mutate_sequence(ref_sequence, bases, MUTATION_RATE)
   write_sequence(output_file, name, sequence)
 
 output_file.close()
