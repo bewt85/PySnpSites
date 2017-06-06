@@ -8,7 +8,7 @@ pyximport.install()
 import random_fasta_extensions
 
 # Makes about 1GB of sequences
-N_SEQUENCES = 422
+N_SEQUENCES = int(os.environ.get('N_SEQUENCES', 422))
 SEQUENCE_LENGTH = 5000000
 MUTATION_RATE = 0.0001
 
